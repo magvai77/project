@@ -45,7 +45,3 @@ function snmpGet($swArray)
 
 snmpGet($swArray);
 
-
-$result = '';
-$description = '';
-$inputData = '';
