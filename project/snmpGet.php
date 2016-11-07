@@ -37,17 +37,15 @@ function stpGet($swArray)
                         foreach ($ports as $key2 => $value2) {
                                 $role = snmp2_get($swip, 'public', $roleOid . $ports[$key2] . $endRoleOid, 20000);
                                 $cost = snmp2_get($swip, 'public', $costOid . $ports[$key2], 20000);
-                                ${'port' . $ports[$key2] . 'role'} = intval(str_replace("INTEGER:", "", $role));
-                                ${'port' . $ports[$key2] . 'cost'} = intval(str_replace("INTEGER:", "", $cost));
 
                                 if ($ports[$key2] >= 73) {
                                         $port = $ports[$key2] - 48;
-                                        $portRole = ${'port' . $ports[$key2] . 'role'} - 1;
-                                        $portCost = ${'port' . $ports[$key2] . 'cost'};
+                                        $portRole = ($role != false) ? intval(str_replace("INTEGER:", "", $role)) - 1 : 1;
+                                        $portCost = ($cost != false) ? intval(str_replace("INTEGER:", "", $cost)) : 19;
                                 } else {
                                         $port = $ports[$key2];
-                                        $portRole = ${'port' . $ports[$key2] . 'role'};
-                                        $portCost = ${'port' . $ports[$key2] . 'cost'};                                        
+                                        $portRole = ($role != false) ? intval(str_replace("INTEGER:", "", $role)) : 1;
+                                        $portCost = ($cost != false) ? intval(str_replace("INTEGER:", "", $cost)) : 19;                                       
                                 }
 
                                 $array[$elem[0]][$swname][$port] = [
@@ -57,7 +55,33 @@ function stpGet($swArray)
                         }
                 }
         }
-        var_dump($array);
+        return $array;
 }
 
-stpGet($swArray);
+$stpArray = stpGet($swArray);
+
+function stpElem($stpArray)
+{
+        foreach ($stpArray as $elem => $value) {
+                $elemId = $elem;
+                $elemArray[] = $elemId;
+
+                foreach ($stpArray[$elem] as $switch => $value1) {
+                        $swName = $switch;
+
+                        foreach ($stpArray[$elem][$switch] as $ports => $value2) {
+                                $port = $ports;
+
+                                if (in_array(1, $stpArray[$elem][$switch][$ports], true)) {
+                                        $costAlternate = $stpArray[$elemId][$swName][$port]['cost'];
+                                        $altArray[] = $elemId;
+                                }
+                        }
+                }
+        }
+        $breakstp = array_diff($elemArray, $altArray);
+        $result = implode(', ', $breakstp);
+        echo $result;
+}
+
+stpElem($stpArray);
