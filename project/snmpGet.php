@@ -40,9 +40,19 @@ function stpGet($swArray)
                                 ${'port' . $ports[$key2] . 'role'} = intval(str_replace("INTEGER:", "", $role));
                                 ${'port' . $ports[$key2] . 'cost'} = intval(str_replace("INTEGER:", "", $cost));
 
-                                $array[$elem[0]][$swname][$ports[$key2]] = [
-                                        'role' => ${'port' . $ports[$key2] . 'role'},
-                                        'cost' => ${'port' . $ports[$key2] . 'cost'}
+                                if ($ports[$key2] >= 73) {
+                                        $port = $ports[$key2] - 48;
+                                        $portRole = ${'port' . $ports[$key2] . 'role'} - 1;
+                                        $portCost = ${'port' . $ports[$key2] . 'cost'};
+                                } else {
+                                        $port = $ports[$key2];
+                                        $portRole = ${'port' . $ports[$key2] . 'role'};
+                                        $portCost = ${'port' . $ports[$key2] . 'cost'};                                        
+                                }
+
+                                $array[$elem[0]][$swname][$port] = [
+                                        'role' => $portRole,
+                                        'cost' => $portCost
                                 ];
                         }
                 }
@@ -51,4 +61,3 @@ function stpGet($swArray)
 }
 
 stpGet($swArray);
-
