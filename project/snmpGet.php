@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/config.php';
+require __DIR__ . '/pattern.php';
 
 $file = __DIR__ . '/a4.csv';
 
