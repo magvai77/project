@@ -35,17 +35,21 @@ function stpGet($swArray)
                         $ports = explode(',', $patternArray[$key1]['ports']);
 
                         foreach ($ports as $key2 => $value2) {
+                                $mesStartPort = 73;
+                                $mesPortToDlink = 48;
+                                $defaultCost = 19;
+                                $defaultRole = 1;
                                 $role = snmp2_get($swip, 'public', $roleOid . $ports[$key2] . $endRoleOid, 20000);
                                 $cost = snmp2_get($swip, 'public', $costOid . $ports[$key2], 20000);
 
-                                if ($ports[$key2] >= 73) {
-                                        $port = $ports[$key2] - 48;
-                                        $portRole = ($role != false) ? intval(str_replace("INTEGER:", "", $role)) - 1 : 1;
-                                        $portCost = ($cost != false) ? intval(str_replace("INTEGER:", "", $cost)) : 19;
+                                if ($ports[$key2] >= $mesStartPort) {
+                                        $port = $ports[$key2] - $mesPortToDlink;
+                                        $portRole = ($role != false) ? intval(str_replace("INTEGER:", "", $role)) - 1 : $defaultRole;
+                                        $portCost = ($cost != false) ? intval(str_replace("INTEGER:", "", $cost)) : $defaultCost;
                                 } else {
                                         $port = $ports[$key2];
-                                        $portRole = ($role != false) ? intval(str_replace("INTEGER:", "", $role)) : 1;
-                                        $portCost = ($cost != false) ? intval(str_replace("INTEGER:", "", $cost)) : 19;                                       
+                                        $portRole = ($role != false) ? intval(str_replace("INTEGER:", "", $role)) : $defaultRole;
+                                        $portCost = ($cost != false) ? intval(str_replace("INTEGER:", "", $cost)) : $defaultCost;                                       
                                 }
 
                                 $array[$elem[0]][$swname][$port] = [
